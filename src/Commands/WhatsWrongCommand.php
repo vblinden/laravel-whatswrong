@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Vblinden\WhatsWrong\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class WhatsWrongCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-whats-wrong';
 
     public $description = 'My command';
 
