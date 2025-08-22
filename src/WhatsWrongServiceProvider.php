@@ -61,7 +61,7 @@ class WhatsWrongServiceProvider extends PackageServiceProvider
                 return ! empty($context) ? $context : null;
             }),
             'trace' => $trace,
-            'line_preview' => ExceptionContext::get($exception),
+            'line_preview' => base64_encode(json_encode(ExceptionContext::get($exception))),
             'project_id' => config('whatswrong.project_id'),
         ];
 
