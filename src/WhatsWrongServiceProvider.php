@@ -62,7 +62,7 @@ class WhatsWrongServiceProvider extends PackageServiceProvider
             }),
             'trace' => $trace,
             'line_preview' => ExceptionContext::get($exception),
-            'project_id' => config('whatswrong.project_id') ?? throw new \Exception('What\'s Wrong project ID is not set. Please set the WHATSWRONG_PROJECT_ID environment variable.'),
+            'project_id' => config('whatswrong.project_id'),
         ];
 
         try {
@@ -98,6 +98,10 @@ class WhatsWrongServiceProvider extends PackageServiceProvider
 
     private function shouldIgnore($event): bool
     {
+        if (config('whatswrong.project_id') === null) {
+            return true;
+        }
+
         return ! isset($event->context['exception']) ||
             ! $event->context['exception'] instanceof Throwable;
     }
