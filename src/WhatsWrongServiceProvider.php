@@ -5,7 +5,6 @@ namespace Vblinden\WhatsWrong;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Throwable;
@@ -67,10 +66,34 @@ class WhatsWrongServiceProvider extends PackageServiceProvider
         ];
 
         try {
-            Http::post(sprintf('%s/ingest/exception', config('whatswrong.url', 'https://whatswrong.dev')), $data);
+            $this->sendAsyncRequest($data);
         } catch (Throwable) {
             // Do nothing.
         }
+    }
+
+    private function sendAsyncRequest(array $data): void
+    {
+        $url = sprintf('%s/ingest/exception', config('whatswrong.url', 'https://whatswrong.dev'));
+        $jsonData = json_encode($data);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Content-Length: '.strlen($jsonData),
+        ]);
+
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_NOSIGNAL, true);
+
+        curl_exec($ch);
+        curl_close($ch);
     }
 
     private function shouldIgnore($event): bool
