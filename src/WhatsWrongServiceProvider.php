@@ -22,7 +22,7 @@ class WhatsWrongServiceProvider extends PackageServiceProvider
     public function configurePackage(Package $package): void
     {
         $package
-            ->name('whatswrong-laravel')
+            ->name('whatswrong')
             ->hasConfigFile();
     }
 
