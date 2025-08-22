@@ -63,11 +63,11 @@ class WhatsWrongServiceProvider extends PackageServiceProvider
             }),
             'trace' => $trace,
             'line_preview' => ExceptionContext::get($exception),
-            'project_id' => config('whatswrong.project_id'),
+            'project_id' => config('whatswrong.project_id') ?? throw new \Exception('What\'s Wrong project ID is not set. Please set the WHATSWRONG_PROJECT_ID environment variable.'),
         ];
 
         try {
-            Http::post(sprintf('%s/ingest/exception', config('whatswrong.url')), $data);
+            Http::post(sprintf('%s/ingest/exception', config('whatswrong.url', 'https://whatswrong.dev')), $data);
         } catch (Throwable) {
             // Do nothing.
         }
