@@ -5,6 +5,7 @@ namespace Vblinden\WhatsWrong;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Throwable;
@@ -88,11 +89,17 @@ class WhatsWrongServiceProvider extends PackageServiceProvider
 
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_NOSIGNAL, true);
 
-        curl_exec($ch);
+        $response = curl_exec($ch);
+        $decodedResponse = json_decode($response, true);
+        $sharedResponse = $decodedResponse === null ? $response : $decodedResponse;
+
+        app()->instance('whatswrong.response', $sharedResponse);
+        View::share('whatswrong', $sharedResponse);
+
         curl_close($ch);
     }
 
